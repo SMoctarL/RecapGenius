@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RecapGenius - Résumé de vidéos YouTube</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>RecapGenius</h1>
+            <p class="subtitle">Résumé intelligent de vidéos YouTube en fonction des sous-titres 🚀</p>
+        </header>
+
+        <main>
+            <div class="input-container">
+                <input type="text" id="youtube-url" 
+                       placeholder="Collez l'URL YouTube ici...">
+                
+                <div class="options">
+                    <select id="length">
+                        <option value="short">Court</option>
+                        <option value="medium" selected>Moyen</option>
+                        <option value="long">Long</option>
+                    </select>
+
+                    <select id="format">
+                        <option value="paragraph">Paragraphe</option>
+                        <option value="bullets">Bullet Points</option>
+                        <option value="mindmap">Mind Map</option>
+                    </select>
+
+                    <select id="language">
+                        <option value="fr">Français</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+
+                <button id="summarize-btn">Générer le résumé</button>
+            </div>
+
+            <div class="result-container hidden">
+                <h2 id="video-title"></h2>
+                <div id="summary-content"></div>
+            </div>
+
+            <div class="loader hidden">
+                <div class="spinner"></div>
+                <p>Génération du résumé en cours...</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html> 
