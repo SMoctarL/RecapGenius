@@ -2,15 +2,12 @@ from transformers import pipeline
 
 class Summarizer:
     def __init__(self):
-        # Utiliser le modèle T5 français pour de meilleurs résultats
         self.summarizer = pipeline(
             "summarization",
-            model="csebuetnlp/mT5_multilingual_XLSum",  # Modèle multilingue
-            max_length=150,
-            min_length=40,
+            model="facebook/bart-large-cnn",
             truncation=True
         )
-        self.max_chunk_length = 512  # Longueur maximale pour T5
+        self.max_chunk_length = 1024  # BART peut gérer jusqu'à 1024 tokens
 
     def chunk_text(self, text):
         """Découpe le texte en morceaux plus petits."""
@@ -35,15 +32,21 @@ class Summarizer:
 
     def summarize(self, text, max_length='medium', format='paragraph'):
         """
-        Résume le texte en utilisant mT5 multilingue.
+        Résume le texte en utilisant BART.
         max_length: 'short', 'medium', 'long'
         format: 'paragraph', 'bullets', 'mindmap'
         """
         # Définir la longueur maximale
         max_length_words = {
-            'short': 50,
-            'medium': 100,
-            'long': 150
+            'short': 60,
+            'medium': 120,
+            'long': 180
+        }
+
+        min_length_words = {
+            'short': 30,
+            'medium': 60,
+            'long': 90
         }
 
         # Découper le texte en chunks
@@ -56,10 +59,9 @@ class Summarizer:
                 summary = self.summarizer(
                     chunk,
                     max_length=max_length_words[max_length] // len(chunks),
-                    min_length=30,
-                    do_sample=True,
-                    temperature=0.7,  # Ajoute de la variété
-                    num_beams=4  # Améliore la qualité
+                    min_length=min_length_words[max_length] // len(chunks),
+                    do_sample=False,  # Plus déterministe
+                    num_beams=4  # Meilleure qualité
                 )[0]['summary_text']
                 summaries.append(summary)
             elif chunk.strip():
@@ -73,9 +75,8 @@ class Summarizer:
             combined_summary = self.summarizer(
                 combined_summary,
                 max_length=max_length_words[max_length],
-                min_length=max_length_words[max_length] // 2,
-                do_sample=True,
-                temperature=0.7,
+                min_length=min_length_words[max_length],
+                do_sample=False,
                 num_beams=4
             )[0]['summary_text']
 
